@@ -1,4 +1,6 @@
-# Ideation Bot - Idea drought figher, a gemini based cli chatbot with the following functionality:
+# Ideation Bot - Idea drought figher, a cli chatbot
+
+A gemini based chatbot with the following features:
 
 1. Context Importing - Import context from other chats, all chats within a project.
 2. Retrieve chats as text files for later reference.
