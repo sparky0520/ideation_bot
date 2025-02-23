@@ -14,5 +14,5 @@ A gemini based chatbot with the following features:
 4. Make a virtual environment `python3 -m venv env`
 5. Activate the environment using `source env/bin/activate`
 6. Install all packages using `pip install -r requirements.txt`
-7. Put your gemini api key in attribute marked in `main.py`
+7. Put your gemini api key in GEMINI_API_KEY attribute in `.env` file
 8. Start using by running `python main.py`
