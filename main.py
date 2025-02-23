@@ -1,4 +1,9 @@
 from conversation_engine import ConversationEngine
+from dotenv import load_dotenv
+import os
+
+# load environment variables
+load_dotenv()
 
 def main():
     try:
@@ -35,7 +40,7 @@ def main():
                 # ai_model='gemini-2.0-flash-lite-preview-02-05',
                 ai_model = 'gemini-1.5-flash-8b-001',
                 model_temperature= 0.7,
-                API_KEY = 'GEMINI API KEY HERE',
+                API_KEY = os.getenv('GEMINI_API_KEY'),
                 chat_path= cpath,
                 system_chat_instructions = sys_prompt
             )
