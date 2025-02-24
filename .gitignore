@@ -3,3 +3,7 @@
 
 # virtual environment
 /env
+
+# pycache
+__pycache__/
+*.pyc

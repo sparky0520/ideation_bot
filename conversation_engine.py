@@ -24,7 +24,7 @@ class ConversationEngine:
         
         # Writing system instruction to chat file
         if not(os.path.exists(path=chat_path)):
-            with open(chat_path, 'w') as file:
+            with open(chat_path, 'w', encoding='utf-8') as file:
                 file.write("*__System__*: "+ system_chat_instructions + '\n\n')
         
     # Modify chat file according to User action
@@ -39,7 +39,7 @@ class ConversationEngine:
         if not chat_file_path_flag:
             if(user_chat_prompt):
                 # Appending user prompt to current file
-                with open(self.chat_path, 'a') as file:
+                with open(self.chat_path, 'a', encoding='utf-8') as file:
                         file.write("*__User__*: " + user_chat_prompt + '\n\n')
             else:
                 raise "user_chat_prompt cant be empty!"
@@ -53,12 +53,12 @@ class ConversationEngine:
                     # add contents of sibling files as inputted prompt
                     for chat_file in os.listdir(curr_dir):
                         if(chat_file!= curr_file):
-                            with open(curr_dir+'/'+chat_file, 'r') as file:
+                            with open(curr_dir+'/'+chat_file, 'r', encoding='utf-8') as file:
                                 contents += f"-----{chat_file}-----\n\n" + file.read() + '\n\n'
                     
                 else:
                     # add contents of provided file as inputted prompt
-                    with open(chat_file_path, 'r') as file:
+                    with open(chat_file_path, 'r', encoding='utf-8') as file:
                         contents += file.read() + '\n\n'
                 
                 contents += '----------Past Chats End-----------```'
@@ -69,7 +69,7 @@ class ConversationEngine:
                     content_lines_list[i] = f'\t{content_lines_list}'
 
                 # Writing contents to current chat file
-                with open(self.chat_path, 'a') as file:
+                with open(self.chat_path, 'a', encoding='utf-8') as file:
                     file.write("*__User__*: Below are the contents of past conversations between us. Consider it for future answers.\n" + '\n'.join(contents) + '\n\n')
             else:
                 raise "chat_file_path cant be empty!"
@@ -77,7 +77,7 @@ class ConversationEngine:
     # Modify chat file with AI response
     def AIOutputToFile(self) -> str:
         # Get AI response for current chat file
-        with open(self.chat_path, 'r') as file:
+        with open(self.chat_path, 'r', encoding='utf-8') as file:
             contents = file.read()
         response = self.client.models.generate_content(
             model = self.ai_model,
@@ -88,7 +88,7 @@ class ConversationEngine:
         )
         
         # Add response to chat file
-        with open(self.chat_path, 'a') as file:
+        with open(self.chat_path, 'a', encoding='utf-8') as file:
             file.write("*__Assistant__*: " + response.text + '\n\n')
 
         # return response
