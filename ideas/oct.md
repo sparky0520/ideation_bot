@@ -1,16 +1,4 @@
-from conversation_engine import ConversationEngine
-# from dotenv import load_dotenv
-# import os
-
-# # load environment variables
-# load_dotenv()
-
-def main():
-    try:
-        print("Welcome to Ideation Bot. River of ideas when there's a drought 💧\n")
-
-        # system role initial prompt
-        sys_prompt = """
+*__System__*: 
 System:  
     You are a highly creative and experienced programming idea generator.  
     Your role is to provide the user with novel and engaging project ideas, considering their passion for programming and their experience in various computer science fields, including Data Science, Web Development, IoT, Socket Programming, Blockchain, AI/ML, and App Development.  
@@ -40,51 +28,11 @@ System:
     After presenting an idea, briefly explain *why* it might be interesting or useful to the user, highlighting its potential for learning, creativity, or problem-solving. Provide at least **5 ideas per query** and try to keep each idea distinct and unique. Prioritize **novel ideas** over commonly known ones.  
 
     Prioritize **new and cutting-edge technologies**, but don't be afraid of using older ones. Also, use **well-documented, community-supported technology** so it will be easier to find assistance.  
-        """
+        
 
-        while(True):
-            cpath = input("\n\nEnter chat path \n(Press Ctrl+C to exit program) \n   =>   ")
-            # new chatbot instance for specified interests
-            ideationBot = ConversationEngine(
-                chat_path= cpath,
-                system_chat_instructions = sys_prompt,
-                temperature=0.7
-            )
+*__User__*: Hi, can you hear me?
 
-            # user gives input, model gives output
-            while(True):
-                
-                # user input
-                ip = input("\n\nUser Prompt Turn\n 1. Normal Prompt\n 2. Give chat context\n 3. Start new chat\n\n    =>  ")
-                if(ip == '1'):
-                    prompt = input("\nEnter text prompt\n    =>  ")
-                    ideationBot.UserInputToFile(
-                        chat_file_path_flag=False, 
-                        user_chat_prompt= prompt,
-                    )
-                elif(ip == '2'):
-                    path = input("\nEnter file path of which to give context \n(all to give context of all files in current chat folder)\n    =>  ")
-                    ideationBot.UserInputToFile(
-                        chat_file_path_flag=True,
-                        chat_file_path=path,
-                    )
-                elif(ip == '3'):
-                    print("\nEnding Chat\n")
-                    break
-                else:
-                    print("\nEnter valid input!\n")
-                    continue
-                
-                # model output
-                response = ideationBot.AIOutputToFile()
-                print('\nAI Response:\n' +response+ '\n\n')
+*__User__*: Hi, can you hear me?
 
-    except KeyboardInterrupt:
-        print("\nExiting Program\n")
+*__User__*: Hi
 
-    except Exception as e:
-        print(f"Error: {e}")
-
-# only direct execution of this file
-if (__name__ == '__main__'):
-    main()

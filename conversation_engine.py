@@ -4,26 +4,44 @@ Conversational Engine - Talk with Gemini about anything
 2. Method inputting user action
 3. Method outputting model response
 """
-from google import genai
-# from google.genai import types
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
+import torch
 import os
 
+# MODEL INITIALIZATION
+
+# defining quantization config
+bnb_config = BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_compute_dtype=torch.float16,   # use fp16 for computation instead of fp32
+    bnb_4bit_quant_type="nf4",  # better than int4 for llms
+    bnb_4bit_use_double_quant=True, # another compression layer on 4-bit quant to reduce vram usage
+)
+
+# Loading tokenizer - converts text to numbers/tokens for model to compute and predict
+# model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+model_name = "mistralai/Mistral-7B-Instruct-v0.3"
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+
+# Loading model
+model = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map="auto",  # offloads excess layers to cpu if needed
+    quantization_config=bnb_config  # efficient quantization
+)
+
 class ConversationEngine:
-    # Initialize client object and chat text file based on path provided
-    def __init__ (self, ai_model, API_KEY, chat_path, system_chat_instructions, model_temperature=0.7):
-        # initializing variables and model client object
+    # Initialize new chat
+    def __init__ (self, chat_path, system_chat_instructions, temperature = 0.7):
         self.chat_path = chat_path
-        self.ai_model = ai_model
-        self.model_temperature = model_temperature
-        self.client = genai.Client(api_key= API_KEY)
+        self.model_temperature = temperature
 
         # Creating directory if it doesn't exist
         directory = os.path.dirname(chat_path)
-        if not os.path.exists(directory):
-            os.makedirs(directory, exist_ok=True)
+        os.makedirs(directory, exist_ok=True)
         
-        # Writing system instruction to chat file
-        if not(os.path.exists(path=chat_path)):
+        # Writing system instruction to chat file if it doesn't exists
+        if not(os.path.exists(chat_path)):
             with open(chat_path, 'w', encoding='utf-8') as file:
                 file.write("*__System__*: "+ system_chat_instructions + '\n\n')
         
@@ -66,7 +84,7 @@ class ConversationEngine:
                 # inserting tabspace before all lines of contents
                 content_lines_list = contents.split('\n')
                 for i in range(len(content_lines_list)):
-                    content_lines_list[i] = f'\t{content_lines_list}'
+                    content_lines_list[i] = f'\t{content_lines_list[i]}'
 
                 # Writing contents to current chat file
                 with open(self.chat_path, 'a', encoding='utf-8') as file:
@@ -79,17 +97,15 @@ class ConversationEngine:
         # Get AI response for current chat file
         with open(self.chat_path, 'r', encoding='utf-8') as file:
             contents = file.read()
-        response = self.client.models.generate_content(
-            model = self.ai_model,
-            contents = contents,
-            # config=types.GenerateContentConfig(
-            #     temperature=self.model_temperature,
-            # ),
-        )
         
+        inputs = tokenizer(contents, return_tensors='pt').to(model.device)
+        with torch.no_grad():
+            output = model.generate(**inputs)
+        response = tokenizer.decode(output[0], skip_special_tokens=True)
+
         # Add response to chat file
         with open(self.chat_path, 'a', encoding='utf-8') as file:
-            file.write("*__Assistant__*: " + response.text + '\n\n')
+            file.write("*__Assistant__*: " + response + '\n\n')
 
         # return response
-        return response.text
+        return response
