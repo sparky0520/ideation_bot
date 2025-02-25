@@ -16,3 +16,5 @@ A gemini based chatbot with the following features:
 6. Install all packages using `pip install -r requirements.txt`
 7. Put your gemini api key in GEMINI_API_KEY attribute in `.env` file
 8. Start using by running `python main.py`
+
+**P.S.**: If any errors come just generate a new API key from `https://aistudio.google.com/apikey`. It's free anyways...

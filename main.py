@@ -37,8 +37,8 @@ def main():
             cpath = input("\n\nEnter chat path \n(Press Ctrl+C to exit program) \n   =>   ")
             # new chatbot instance for specified interests
             ideationBot = ConversationEngine(
-                # ai_model='gemini-2.0-flash-lite-preview-02-05',
-                ai_model = 'gemini-1.5-flash-8b-001',
+                ai_model='gemini-2.0-flash-lite-preview-02-05',
+                # ai_model = 'gemini-1.5-flash-8b-001',
                 model_temperature= 0.7,
                 API_KEY = os.getenv('GEMINI_API_KEY'),
                 chat_path= cpath,
