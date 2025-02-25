@@ -3,12 +3,12 @@ import torch
 import os
 
 # MODEL INITIALIZATION
-model_name = "tiiuae/Falcon3-1B-Instruct"
+model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
 
-# Loading tokenizer
+# Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
-# Loading model
+# Load model
 model = AutoModelForCausalLM.from_pretrained(
     model_name,
     device_map="auto",  # Offloads layers if needed
@@ -53,8 +53,8 @@ class ConversationEngine:
                         contents += file.read() + '\n'
 
                 # Truncate if too long
-                if len(contents) > 1000:
-                    contents = contents[-1000:]
+                if len(contents) > 2000:
+                    contents = contents[-2000:]
 
                 # Append past chat reference to current chat file
                 with open(self.chat_path, 'a', encoding='utf-8') as file:
@@ -68,9 +68,9 @@ class ConversationEngine:
         with open(self.chat_path, 'r', encoding='utf-8') as file:
             contents = file.read()
 
-        # Keep only the last 1000 characters for context
-        if len(contents) > 1000:
-            contents = contents[-1000:]
+        # Keep only the last 2000 characters for context
+        if len(contents) > 2000:
+            contents = contents[-2000:]
 
         # Prepare input for model
         prompt = contents.strip() + "\n\n### Response:\n"
@@ -80,10 +80,10 @@ class ConversationEngine:
         with torch.no_grad():
             output = model.generate(
                 **inputs,
-                max_new_tokens=200,
-                temperature=0.8,
-                top_p=0.9,
-                repetition_penalty=1.2,
+                max_new_tokens=250,  # Slightly increased for better responses
+                temperature=0.7,  # Balanced creativity & coherence
+                top_p=0.85,  # Slightly more controlled randomness
+                repetition_penalty=1.15,  # Reduces prompt echoing
                 do_sample=True,
                 num_return_sequences=1
             )
