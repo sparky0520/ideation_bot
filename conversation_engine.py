@@ -12,15 +12,14 @@ import os
 
 # defining quantization config
 bnb_config = BitsAndBytesConfig(
-    load_in_4bit=True,
-    bnb_4bit_compute_dtype=torch.float16,   # use fp16 for computation instead of fp32
-    bnb_4bit_quant_type="nf4",  # better than int4 for llms
-    bnb_4bit_use_double_quant=True, # another compression layer on 4-bit quant to reduce vram usage
+    llm_int8_enable_fp32_cpu_offload=True,
+    load_in_8bit=True,  # 8 bit quantization
 )
 
+# model_name = "microsoft/Phi-3.5-mini-instruct"
+model_name = "microsoft/phi-2"
+
 # Loading tokenizer - converts text to numbers/tokens for model to compute and predict
-# model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
-model_name = "mistralai/Mistral-7B-Instruct-v0.3"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 
 # Loading model
@@ -100,7 +99,7 @@ class ConversationEngine:
         
         inputs = tokenizer(contents, return_tensors='pt').to(model.device)
         with torch.no_grad():
-            output = model.generate(**inputs)
+            output = model.generate(**inputs, max_new_tokens=150, temperature=0.7, do_sample=True)
         response = tokenizer.decode(output[0], skip_special_tokens=True)
 
         # Add response to chat file
